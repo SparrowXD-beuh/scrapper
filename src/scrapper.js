@@ -31,9 +31,7 @@ async function scrapeLinks(keyword) {
   const browser = await getBrowser();
   const page = await browser.newPage();
   try {
-    await page.goto(`https://gomovies.pe/filter?keyword=${keyword}`, {
-      timeout: timeout,
-    })
+    await page.goto(`https://gomovies.pe/filter?keyword=${keyword}`, {timeout: timeout,})
     const $ = cheerio.load(await page.content());
     const links = $("div.melody").map((index, element) => {
       const href = $(element).find("a").attr("href");
