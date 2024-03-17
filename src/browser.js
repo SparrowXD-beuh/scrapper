@@ -7,7 +7,7 @@ let browser;
     if (!browser) {
         puppeteer.use(StealthPlugin());
         browser = await puppeteer.launch({
-            executablePath: await Chromium.executablePath(),
+            executablePath: await Chromium.executablePath,
             headless: true,
         });
     }
