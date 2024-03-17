@@ -1,4 +1,4 @@
-FROM node:latest
+FROM ghcr.io/puppeteer/puppeteer:latest
 
 RUN apt-get update && apt-get install -y \
     chromium \
@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
-
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 COPY package*.json ./
