@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 
 app.get("/test", async (req, res) => {
     try {
-        const results = await scrapeLinks();
+        const results = await scrapeLinks(req.query.keyword);
         res.send({
             statusCode: res.statusCode,
             body: results
