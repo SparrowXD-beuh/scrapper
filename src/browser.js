@@ -7,7 +7,7 @@ const getBrowser = async () => {
     if (!browser) {
         puppeteer.use(StealthPlugin());
         browser = await puppeteer.launch({
-            executablePath: chromium.path,
+            executablePath: '/usr/bin/google-chrome-stable',
             headless: true,
             args: ['--no-sandbox']
         });
