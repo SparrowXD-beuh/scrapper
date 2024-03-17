@@ -28,20 +28,21 @@ async function scrapeSource(url) {
 }
 
 async function scrapeLinks(keyword) {
+  const links = [];
   const browser = await getBrowser();
   const page = await browser.newPage();
   try {
     await page.goto(`https://gomovies.pe/filter?keyword=${keyword}`, {timeout: timeout,})
     const $ = cheerio.load(await page.content());
-    const links = $("div.melody").map((index, element) => {
+    $("div.melody").map((index, element) => {
       const href = $(element).find("a").attr("href");
-      return {
+      links.push({
         name: $(element).find("div.data a").text(),
         href: href,
         image: $(element).find("img").attr("src"),
         type: href.split('/')[1]
-      };
-    }).get();
+      });
+    })
     console.log(links);
   } catch (error) {
     console.error(error);
@@ -49,6 +50,7 @@ async function scrapeLinks(keyword) {
     scrapeLinks(keyword);
   } finally {
     await page.close();
+    return links
   }
 }
 
