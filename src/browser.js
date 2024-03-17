@@ -9,6 +9,7 @@ const getBrowser = async () => {
         browser = await puppeteer.launch({
             executablePath: chromium.path,
             headless: true,
+            args: ['--no-sandbox']
         });
     }
     return browser;
