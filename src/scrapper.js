@@ -1,9 +1,10 @@
 const cheerio = require("cheerio");
-const browser = require("./browser");
+const getBrowser = require("./browser");
 
 const timeout = 60000;
 async function scrapeSource(url) {
   let source;
+  const browser = await getBrowser();
   const page = await browser.newPage();
   try {
     await page.goto(url, { timeout: timeout });
@@ -27,6 +28,7 @@ async function scrapeSource(url) {
 }
 
 async function scrapeLinks(keyword) {
+  const browser = await getBrowser();
   const page = await browser.newPage();
   try {
     await page.goto(`https://gomovies.pe/filter?keyword=${keyword}`, {

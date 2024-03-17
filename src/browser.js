@@ -3,7 +3,7 @@ const Chromium = require("chrome-aws-lambda");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 let browser;
-(async () => {
+const getBrowser = async () => {
     if (!browser) {
         puppeteer.use(StealthPlugin());
         browser = await puppeteer.launch({
@@ -11,6 +11,7 @@ let browser;
             headless: true,
         });
     }
-})();
+    return browser;
+};
 
-module.exports = browser;
+module.exports = getBrowser;
