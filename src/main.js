@@ -36,3 +36,14 @@ app.get("/screenshot", async (req, res) => {
         res.status(500).send("An error occurred :(");
     }
 })
+
+app.get("/gogo", async (req, res) => {
+    try {
+        const screenshot = await takeScreenshot();
+        res.set('Content-Type', 'image/png');
+        res.send(screenshot);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred :(");
+    }
+})

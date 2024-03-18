@@ -54,26 +54,29 @@ async function scrapeLinks(keyword) {
   }
 }
 
-async function takeScreenshot() {
-  // Launch Puppeteer
+async function takeScreenshot(url) {
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+  await page.goto(url);
+  const screenshot = await page.screenshot();
+  await page.close();
+  return screenshot;
+}
+
+async function scrapeGOGO(id) {
   const browser = await getBrowser();
   const page = await browser.newPage();
 
-  // Navigate to Google
-  await page.goto('https://www.google.com');
-
-  // Take a screenshot
+  await page.goto('https://embtaku.pro/download?id=MjE4OTEz');
   const screenshot = await page.screenshot();
 
-  // Close the browser
   await page.close();
-
-  // Return the screenshot buffer
   return screenshot;
 }
 
 module.exports = {
   scrapeSource,
   scrapeLinks,
-  takeScreenshot
+  takeScreenshot,
+  scrapeGOGO
 };
