@@ -3,7 +3,6 @@ const cheerio = require("cheerio");
 const getBrowser = require("./browser");
 
 const timeout = 60000;
-
 async function takeScreenshot(url) {
   const browser = await getBrowser();
   const page = await browser.newPage();
@@ -28,6 +27,7 @@ async function getVideoSrc(videoid) {
       src: link.getAttribute('href')
     }))
   );
+  console.log(sources);
   await page.close();
   return {
     filename,
@@ -42,18 +42,18 @@ async function searchAnime(keyword) {
   const $ = cheerio.load(html.data);
   const animes = $('ul.items li').map((index, element) => {
     const name = $(element).find('p > a').text().trim().replace(/\s*\([^)]*\)/g, '');
-    const href= $(element).find('p > a').attr('href').replace(/-dub$/, '').replace(/^\/category\//, '');
+    const href= $(element).find('p > a').attr('href').replace(/-dub$/, '');
     return {name, href}
   }).get();
-  // console.log(animes);
+  console.log(animes);
   return animes;
 };
 
 async function getVideoId(url, episode, dub) {
-  const html = await axios.get(`https://ww3.gogoanimes.fi/${url}${dub == true ? "-dub" : ""}-episode-${episode}`);
+  const html = await axios.get(`https://ww3.gogoanimes.fi/${url.replace(/^\/category\//, '')}${dub == true ? "-dub" : ""}-episode-${episode}`);
   const $ = cheerio.load(html.data);
   const videoid = $('li.dowloads > a').attr('href').match(/id=([^&]*)/)[1];
-  // console.log(videoid);
+  console.log(videoid);
   return videoid;
 }
 
