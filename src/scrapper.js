@@ -58,6 +58,7 @@ async function takeScreenshot(url) {
   const browser = await getBrowser();
   const page = await browser.newPage();
   await page.goto(url);
+  await new Promise(resolve => setTimeout(resolve, 5000));
   const screenshot = await page.screenshot();
   await page.close();
   return screenshot;
@@ -68,6 +69,7 @@ async function scrapeGOGO(id) {
   const page = await browser.newPage();
 
   await page.goto('https://embtaku.pro/download?id=MjE4OTEz');
+  await new Promise(resolve => setTimeout(resolve, 5000));
   const screenshot = await page.screenshot();
 
   await page.close();
