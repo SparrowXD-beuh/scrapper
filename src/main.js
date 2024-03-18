@@ -1,5 +1,5 @@
 const express = require("express");
-const { scrapeLinks, takeScreenshot, scrapeGOGO } = require("./scrapper");
+const { takeScreenshot, getVideoSrc, searchAnime, getVideoId } = require("./scrapper");
 
 const app = express();
 app.listen(process.env.PORT || 8888, () => {
@@ -37,11 +37,39 @@ app.get("/screenshot", async (req, res) => {
     }
 })
 
-app.get("/gogo", async (req, res) => {
+app.get("/source", async (req, res) => {
     try {
-        const screenshot = await scrapeGOGO();
-        res.set('Content-Type', 'image/png');
-        res.send(screenshot);
+        const results = await getVideoSrc(req.query.videoid);
+        res.send({
+            statusCode: res.statusCode,
+            body: results
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred :(");
+    }
+})
+
+app.get("/search", async (req, res) => {
+    try {
+        const results = await searchAnime(req.query.keyword);
+        res.send({
+            statusCode: res.statusCode,
+            body: results
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred :(");
+    }
+})
+
+app.get("/videoid", async (req, res) => {
+    try {
+        const results = await getVideoId(req.query.url, req.query.ep, req.query.dub);
+        res.send({
+            statusCode: res.statusCode,
+            body: results
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send("An error occurred :(");

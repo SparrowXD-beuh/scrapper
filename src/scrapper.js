@@ -1,58 +1,8 @@
+const axios = require("axios");
 const cheerio = require("cheerio");
 const getBrowser = require("./browser");
 
 const timeout = 60000;
-async function scrapeSource(url) {
-  let source;
-  const browser = await getBrowser();
-  const page = await browser.newPage();
-  try {
-    await page.goto(url, { timeout: timeout });
-    await page.waitForSelector("#player", { timeout: timeout });
-    await page.click("#player button", { timeout: timeout });
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    const iframeSrc = await page.evaluate(() => {
-      const iframe = document.querySelector("#player iframe");
-      return iframe ? iframe.src : iframe;
-    });
-    console.log(iframeSrc);
-    source = iframeSrc;
-  } catch (error) {
-    console.error(error);
-    await page.close();
-    scrape(url);
-  } finally {
-    await page.close();
-    return source;
-  }
-}
-
-async function scrapeLinks(keyword) {
-  const links = [];
-  const browser = await getBrowser();
-  const page = await browser.newPage();
-  try {
-    await page.goto(`https://gomovies.pe/filter?keyword=${keyword}`, {timeout: timeout,})
-    const $ = cheerio.load(await page.content());
-    $("div.melody").map((index, element) => {
-      const href = $(element).find("a").attr("href");
-      links.push({
-        name: $(element).find("div.data a").text(),
-        href: href,
-        image: $(element).find("img").attr("src"),
-        type: href.split('/')[1]
-      });
-    })
-    console.log(links);
-  } catch (error) {
-    console.error(error);
-    await page.close();
-    scrapeLinks(keyword);
-  } finally {
-    await page.close();
-    return links
-  }
-}
 
 async function takeScreenshot(url) {
   const browser = await getBrowser();
@@ -64,21 +14,52 @@ async function takeScreenshot(url) {
   return screenshot;
 }
 
-async function scrapeGOGO(id) {
+async function getVideoSrc(videoid) {
   const browser = await getBrowser();
   const page = await browser.newPage();
-
-  await page.goto('https://embtaku.pro/download?id=MjE4OTEz');
-  await new Promise(resolve => setTimeout(resolve, 5000));
-  const screenshot = await page.screenshot();
-
+  await page.goto(`https://embtaku.pro/download?id=${videoid}`, { timeout: timeout });
+  await page.waitForSelector('#content-download');
+  const filename = await page.$eval('#title', span => span.innerText);
+  const size = await page.$eval('#filesize', span => span.innerText);
+  const duration = await page.$eval('#duration', span => span.innerText);
+  const sources = await page.$$eval('a[download]', links =>
+    links.map(link => ({
+      quality: (link.innerText.trim().replace(/^DOWNLOAD\s*/, '')),
+      src: link.getAttribute('href')
+    }))
+  );
   await page.close();
-  return screenshot;
+  return {
+    filename,
+    size,
+    duration,
+    sources
+  };
+}
+
+async function searchAnime(keyword) {
+  const html = await axios.get(`https://ww3.gogoanimes.fi/filter.html?keyword=${keyword}&language%5B%5D=dub&sort=title_az`);
+  const $ = cheerio.load(html.data);
+  const animes = $('ul.items li').map((index, element) => {
+    const name = $(element).find('p > a').text().trim().replace(/\s*\([^)]*\)/g, '');
+    const href= $(element).find('p > a').attr('href').replace(/-dub$/, '').replace(/^\/category\//, '');
+    return {name, href}
+  }).get();
+  // console.log(animes);
+  return animes;
+};
+
+async function getVideoId(url, episode, dub) {
+  const html = await axios.get(`https://ww3.gogoanimes.fi/${url}${dub == true ? "-dub" : ""}-episode-${episode}`);
+  const $ = cheerio.load(html.data);
+  const videoid = $('li.dowloads > a').attr('href').match(/id=([^&]*)/)[1];
+  // console.log(videoid);
+  return videoid;
 }
 
 module.exports = {
-  scrapeSource,
-  scrapeLinks,
   takeScreenshot,
-  scrapeGOGO
+  getVideoSrc,
+  searchAnime,
+  getVideoId
 };
