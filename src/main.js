@@ -1,5 +1,5 @@
 const express = require("express");
-const { scrapeLinks, takeScreenshot } = require("./scrapper");
+const { scrapeLinks, takeScreenshot, scrapeGOGO } = require("./scrapper");
 
 const app = express();
 app.listen(process.env.PORT || 8888, () => {
@@ -28,7 +28,7 @@ app.get("/test", async (req, res) => {
 
 app.get("/screenshot", async (req, res) => {
     try {
-        const screenshot = await takeScreenshot();
+        const screenshot = await takeScreenshot(req.query.url);
         res.set('Content-Type', 'image/png');
         res.send(screenshot);
     } catch (error) {
@@ -39,7 +39,7 @@ app.get("/screenshot", async (req, res) => {
 
 app.get("/gogo", async (req, res) => {
     try {
-        const screenshot = await takeScreenshot();
+        const screenshot = await scrapeGOGO();
         res.set('Content-Type', 'image/png');
         res.send(screenshot);
     } catch (error) {
