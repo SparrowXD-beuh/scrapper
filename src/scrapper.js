@@ -54,7 +54,26 @@ async function scrapeLinks(keyword) {
   }
 }
 
+async function takeScreenshot() {
+  // Launch Puppeteer
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+
+  // Navigate to Google
+  await page.goto('https://www.google.com');
+
+  // Take a screenshot
+  const screenshot = await page.screenshot();
+
+  // Close the browser
+  await page.close();
+
+  // Return the screenshot buffer
+  return screenshot;
+}
+
 module.exports = {
   scrapeSource,
-  scrapeLinks
+  scrapeLinks,
+  takeScreenshot
 };
