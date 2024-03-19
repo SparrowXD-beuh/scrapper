@@ -1,6 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const getBrowser = require("./browser");
+const { find, insert } = require("./database");
 
 const timeout = 60000;
 async function takeScreenshot(url) {
@@ -14,6 +15,8 @@ async function takeScreenshot(url) {
 }
 
 async function getVideoSrc(videoid) {
+  const exists = await find(videoid, 'sources');
+  if (exists) return exists;
   const browser = await getBrowser();
   const page = await browser.newPage();
   await page.goto(`https://embtaku.pro/download?id=${videoid}`, { timeout: timeout });
@@ -29,12 +32,15 @@ async function getVideoSrc(videoid) {
   );
   console.log(sources);
   await page.close();
-  return {
+  const doc = {
+    _id: videoid,
     filename,
     size,
     duration,
     sources
   };
+  await insert(doc, 'sources');
+  return doc
 }
 
 async function searchAnime(keyword) {

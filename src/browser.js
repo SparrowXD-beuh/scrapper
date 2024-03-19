@@ -11,6 +11,7 @@ const getBrowser = async () => {
             headless: true,
             args: ['--no-sandbox']
         });
+        console.log("browser launched")
     }
     return browser;
 };
