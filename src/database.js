@@ -18,7 +18,7 @@ async function find(videoid, collection) {
 };
 
 async function insert(doc, collection) {
-    const ttl = 26 * 7 * 24 * 60 * 60;
+    const ttl = 4 * 60 * 60
     await database.db("anime").collection(collection).createIndex({ "expiresAt": 1 }, { expireAfterSeconds: ttl });
     doc.expiresAt = new Date();
     doc.expiresAt.setSeconds(doc.expiresAt.getSeconds() + ttl);

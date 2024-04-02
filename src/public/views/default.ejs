@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../scripts/styles.css" />
+    <title><%= data.filename %></title>
+  </head>
+  <body>
+    <div id="videoplayer">
+      <video id="video" preload="auto" controls>
+          <source id="source" src="<%= data.sources[data.sources.length - 1].src %>" type="video/mp4" />
+      </video>
+    </div>
+  </body>
+</html>
