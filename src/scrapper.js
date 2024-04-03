@@ -21,7 +21,7 @@ async function getVideoSrc(videoid) {
     const browser = await getBrowser();
     const page = await browser.newPage();
     await page.goto(`https://embtaku.pro/download?id=${videoid}`, { timeout: timeout });
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
     await page.waitForSelector('#content-download');
     const filename = await page.$eval('#title', span => span.innerText);
     const size = await page.$eval('#filesize', span => span.innerText);
