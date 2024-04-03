@@ -66,9 +66,7 @@ async function searchAnime(keyword) {
 
 async function getVideoId(url, episode, dub) {
  try {
-   const href = `https://ww3.gogoanimes.fi/${url.replace(/^\/category\//, '')}${dub == "true" ? "-dub" : ""}-episode-${episode}`;
-   console.log(href);
-   const html = await axios.get(href);
+   const html = await axios.get(`https://ww3.gogoanimes.fi/${url.replace(/^\/category\//, '')}${dub == "true" ? "-dub" : ""}-episode-${episode}`);
    const $ = cheerio.load(html.data);
    const videoid = $('li.dowloads > a').attr('href').match(/id=([^&]*)/)[1];
    // console.log(videoid);
@@ -100,7 +98,7 @@ async function preloadSources(url, {episodeStart, episodeEnd}, dub) {
 
 async function getLastEpisode(url, dub) {
   try {
-    const html = await axios.get(`https://ww3.gogoanimes.fi/${url}${dub ? "-dub" : ""}`);
+    const html = await axios.get(`https://ww3.gogoanimes.fi/${url}${dub == "true" ? "-dub" : ""}`);
     const $ = cheerio.load(html.data);
     const episodes = $('ul#episode_page > li').toArray();
     const maxEpisode = parseInt($(episodes[episodes.length - 1]).text().trim().split("-")[1])

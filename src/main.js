@@ -73,16 +73,20 @@ app.get("/search", async (req, res) => {
 
 app.get("/videoid", async (req, res) => {
     try {
-        const results = await getVideoId(req.query.url, req.query.ep, req.query.dub);
-        preloadSources(req.query.url, {episodeStart: parseInt(req.query.ep), episodeEnd: parseInt(req.query.ep) + 4}, req.query.dub);
+        const path = req.query.path;
+        const episode = parseInt(req.query.ep);
+        const dub = req.query.dub;
+        const results = await getVideoId(path, episode, dub);
+        const maxEpisodes = await getLastEpisode(path, dub);
+        preloadSources(path, {episodeStart: episode, episodeEnd: maxEpisodes < (episode + 4) ? maxEpisodes : episode + 4 }, dub);
         res.send({
             statusCode: res.statusCode,
             status: res.statusCode == 200 ? "OK" : "Error",
             request: {
-                url: req.query.url, 
-                episodeStart: parseInt(req.query.ep),
-                episodeEnd: parseInt(req.query.ep) + 5,
-                dub: req.query.dub
+                path, 
+                episodeStart: episode,
+                episodeEnd: maxEpisodes < (episode + 4) ? maxEpisodes : episode + 4 ,
+                dub
             },
             body: results
         });
