@@ -74,7 +74,7 @@ app.get("/search", async (req, res) => {
 app.get("/videoid", async (req, res) => {
     try {
         const results = await getVideoId(req.query.url, req.query.ep, req.query.dub);
-        preloadSources(req.query.url, {episodeStart: req.query.ep, episodeEnd: parseInt(req.query.ep) + 5}, req.query.dub);
+        preloadSources(req.query.url, {episodeStart: parseInt(req.query.ep), episodeEnd: parseInt(req.query.ep) + 4}, req.query.dub);
         res.send({
             statusCode: res.statusCode,
             status: res.statusCode == 200 ? "OK" : "Error",
