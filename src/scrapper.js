@@ -41,7 +41,7 @@ async function getVideoSrc(videoid) {
       duration,
       sources
     };
-    if (doc.sources.length > 0) {
+    if (doc.sources.length != 0) {
       await insert(doc, 'sources');
     }
     return doc
@@ -51,7 +51,7 @@ async function getVideoSrc(videoid) {
 }
 
 async function searchAnime(keyword) {
-  const html = await axios.get(`https://ww3.gogoanimes.fi/filter.html?keyword=${keyword.toLowerCase()}&language%5B%5D=dub&sort=title_az`);
+  const html = await axios.get(`https://ww3.gogoanimes.fi/filter.html?keyword=${keyword}&language%5B%5D=dub&sort=title_az`);
   const $ = cheerio.load(html.data);
   const animes = await Promise.all(
     $('ul.items li').map(async (index, element) => {
