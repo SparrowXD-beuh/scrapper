@@ -66,7 +66,9 @@ async function searchAnime(keyword) {
 
 async function getVideoId(url, episode, dub) {
  try {
-   const html = await axios.get(`https://ww3.gogoanimes.fi/${url.replace(/^\/category\//, '')}${dub ? "-dub" : ""}-episode-${episode}`);
+   const href = `https://ww3.gogoanimes.fi/${url.replace(/^\/category\//, '')}${dub == "true" ? "-dub" : ""}-episode-${episode}`;
+   console.log(href);
+   const html = await axios.get(href);
    const $ = cheerio.load(html.data);
    const videoid = $('li.dowloads > a').attr('href').match(/id=([^&]*)/)[1];
    // console.log(videoid);
