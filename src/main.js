@@ -44,7 +44,7 @@ app.get("/source", async (req, res) => {
 
 app.get("/episodes", async (req, res) => {
     try {
-        const results = await getLastEpisode(req.query.url, req.query.dub);
+        const results = await getLastEpisode(req.query.path, req.query.dub);
         res.send({
             statusCode: res.statusCode,
             body: results

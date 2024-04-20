@@ -98,10 +98,10 @@ async function preloadSources(url, {episodeStart, episodeEnd}, dub) {
 
 async function getLastEpisode(url, dub) {
   try {
-    const html = await axios.get(`https://ww3.gogoanimes.fi/${url}${dub == "true" ? "-dub" : ""}`);
+    const html = await axios.get(`https://ww4.gogoanimes.fi/${url}${dub == "true" ? "-dub" : ""}`);
     const $ = cheerio.load(html.data);
-    const episodes = $('ul#episode_page > li').toArray();
-    const maxEpisode = parseInt($(episodes[episodes.length - 1]).text().trim().split("-")[1])
+    const maxEpisode = parseInt($('a.active').attr("ep_end"))
+    console.log(maxEpisode);
     return maxEpisode;
   } catch (error) {
     console.error('Error fetching episodes:', error);
