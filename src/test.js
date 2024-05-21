@@ -2,7 +2,7 @@
 //     let differences = [];
 
 const { insert } = require("./database");
-const { searchAnime, preloadSources, getLastEpisode, searchHanime, getHanimeInfo } = require("./scrapper");
+const { searchAnime, preloadSources, getLastEpisode, searchHanime, getHanimeInfo, searchHentai } = require("./scrapper");
 const { getBulkVideoIds } = require("./scrapper")
 
     
@@ -32,7 +32,7 @@ const { getBulkVideoIds } = require("./scrapper")
 
 async function main() {
     console.time();
-    const res = await searchHanime("persona");
+    const res = await searchHentai("persona");
     console.log(res);
     console.timeEnd();
 }

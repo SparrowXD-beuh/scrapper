@@ -115,12 +115,12 @@ async function getLastEpisode(url, dub) {
   }
 }
 
-async function searchHanime(keyword) {
+async function searchHentai(keyword) {
   try {
-    const html = await axios.get(`https://hanimehentai.tv/?s=${keyword?.replace(/^\/category\//, '')}`, config);
+    const html = await axios.get(`https://hentaihaven.com/?s=${keyword?.replace(/^\/category\//, '')}`, config);
     const $ = cheerio.load(html.data);
     const list = await Promise.all($('div.item').map(async (i, element) => {
-      return await getHanimeInfo($(element).find('a').attr('href').replace('https://hanimehentai.tv/', ''));
+      return await getHentaiInfo($(element).find('a').attr('href').replace('https://hentaihaven.com/', ''));
     }).get());
     return list;
   } catch (error) {
@@ -129,9 +129,9 @@ async function searchHanime(keyword) {
   }
 }
 
-async function getHanimeInfo(path) {
+async function getHentaiInfo(path) {
   try {
-    const html = await axios.get(`https://hanimehentai.tv/${path}`, config);
+    const html = await axios.get(`https://hentaihaven.com/${path}`, config);
     const $ = cheerio.load(html.data);
     return {
       title: $('h1.htitle').text().trim(),
@@ -160,6 +160,6 @@ module.exports = {
   getBulkVideoIds,
   preloadSources,
   getLastEpisode,
-  searchHanime,
-  getHanimeInfo,
+  searchHentai,
+  getHentaiInfo,
 };

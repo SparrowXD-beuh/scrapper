@@ -2,14 +2,14 @@ const path = require('path');
 const express = require("express");
 const getBrowser = require("./browser");
 const { connectToDatabase } = require("./database");
-const { takeScreenshot, getVideoSrc, searchAnime, getVideoId, getBulkVideoIds, preloadSources, getLastEpisode, searchHanime } = require("./scrapper");
+const { takeScreenshot, getVideoSrc, searchAnime, getVideoId, getLastEpisode, searchHentai } = require("./scrapper");
 
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public/views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.listen(process.env.PORT || 8888, async () => {
-    await getBrowser();
+    // await getBrowser();
     await connectToDatabase();
     console.log("app online")
 })
@@ -110,10 +110,10 @@ app.get("/stream", async (req, res) => {
     }
 })
 
-app.get("/hanime/search", async (req, res) => {
+app.get("/hentai/search", async (req, res) => {
     console.time("Search time:");
     try {
-        const results = await searchHanime(req.query.keyword);
+        const results = await searchHentai(req.query.keyword);
         res.send({
             statusCode: res.statusCode,
             body: results
