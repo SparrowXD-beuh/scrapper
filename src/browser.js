@@ -1,4 +1,3 @@
-const chromium = require("chromium");
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
@@ -7,7 +6,7 @@ const getBrowser = async () => {
     if (!browser) {
         puppeteer.use(StealthPlugin());
         browser = await puppeteer.launch({
-            executablePath: chromium.path || '/usr/bin/google-chrome-stable',
+            executablePath: '/usr/bin/google-chrome-stable',
             headless: false,
             args: ['--no-sandbox']
         });
