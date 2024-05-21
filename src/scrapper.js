@@ -16,13 +16,11 @@ async function takeScreenshot(url) {
 
 async function getVideoSrc(videoid) {
   try {
-    const exists = await find(videoid, 'sources');
-    if (exists) return exists;
     const browser = await getBrowser();
     const page = await browser.newPage();
     await page.goto(`https://embtaku.pro/download?id=${videoid}`, { timeout: timeout });
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    await page.waitForSelector('#content-download');
+    // await new Promise(resolve => setTimeout(resolve, 5000));
+    await page.waitForSelector('a[download]');
     const filename = await page.$eval('#title', span => span.innerText);
     const size = await page.$eval('#filesize', span => span.innerText);
     const duration = await page.$eval('#duration', span => span.innerText);
@@ -41,9 +39,6 @@ async function getVideoSrc(videoid) {
       duration,
       sources
     };
-    if (doc.sources.length != 0) {
-      await insert(doc, 'sources');
-    }
     return doc
   } catch (error) {
     console.error(error);
@@ -51,7 +46,7 @@ async function getVideoSrc(videoid) {
 }
 
 async function searchAnime(keyword) {
-  const html = await axios.get(`https://ww3.gogoanimes.fi/filter.html?keyword=${keyword}&language%5B%5D=dub&sort=title_az`);
+  const html = await axios.get(`https://ww4.gogoanimes.fi/filter.html?keyword=${keyword}&language%5B%5D=dub&sort=title_az`);
   const $ = cheerio.load(html.data);
   const animes = await Promise.all(
     $('ul.items li').map(async (index, element) => {
@@ -66,7 +61,7 @@ async function searchAnime(keyword) {
 
 async function getVideoId(url, episode, dub) {
  try {
-   const html = await axios.get(`https://ww3.gogoanimes.fi/${url.replace(/^\/category\//, '')}${dub == "true" ? "-dub" : ""}-episode-${episode}`);
+   const html = await axios.get(`https://ww4.gogoanimes.fi/${url?.replace(/^\/category\//, '')}${dub == "true" ? "-dub" : ""}-episode-${episode}`);
    const $ = cheerio.load(html.data);
    const videoid = $('li.dowloads > a').attr('href').match(/id=([^&]*)/)[1];
    // console.log(videoid);
@@ -109,6 +104,43 @@ async function getLastEpisode(url, dub) {
   }
 }
 
+async function searchHanime(keyword) {
+  try {
+    const html = await axios.get(`https://hanimehentai.tv/?s=${keyword?.replace(/^\/category\//, '')}`);
+    const $ = cheerio.load(html.data);
+    const list = await Promise.all($('div.item').map(async (i, element) => {
+      return await getHanimeInfo($(element).find('a').attr('href').replace('https://hanimehentai.tv/', ''));
+    }).get());
+    return list;
+  } catch (error) {
+     console.error('Error:', error);
+     return "No results found for this keyword:" + keyword;
+  }
+}
+
+async function getHanimeInfo(path) {
+  try {
+    const html = await axios.get(`https://hanimehentai.tv/${path}`);
+    const $ = cheerio.load(html.data);
+    return {
+      title: $('h1.htitle').text().trim(),
+      description: $('div.vraven_text p').text(),
+      poster: $('div.hentai_cover img').attr('src'),
+      genres: $('div.list').eq(0).find('a').map((i, element) => {
+        return $(element).text();
+      }).get(),
+      author: $('div.list').eq(1).find('a').map((i, element) => {
+        return $(element).text();
+      }).get(),
+      released: parseInt($('div.list').eq(2).find('a').text()),
+      episodes: $('div.hentai__episodes ul').children().length
+    };
+  } catch (error) {
+     console.error('Error:', error);
+     return "Error occured path invalid" + path;
+  }
+}
+
 module.exports = {
   takeScreenshot,
   getVideoSrc,
@@ -116,5 +148,7 @@ module.exports = {
   getVideoId,
   getBulkVideoIds,
   preloadSources,
-  getLastEpisode
+  getLastEpisode,
+  searchHanime,
+  getHanimeInfo,
 };

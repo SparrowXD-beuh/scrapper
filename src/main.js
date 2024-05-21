@@ -2,7 +2,7 @@ const path = require('path');
 const express = require("express");
 const getBrowser = require("./browser");
 const { connectToDatabase } = require("./database");
-const { takeScreenshot, getVideoSrc, searchAnime, getVideoId, getBulkVideoIds, preloadSources, getLastEpisode } = require("./scrapper");
+const { takeScreenshot, getVideoSrc, searchAnime, getVideoId, getBulkVideoIds, preloadSources, getLastEpisode, searchHanime } = require("./scrapper");
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -77,15 +77,12 @@ app.get("/videoid", async (req, res) => {
         const episode = parseInt(req.query.ep);
         const dub = req.query.dub;
         const results = await getVideoId(path, episode, dub);
-        const maxEpisodes = await getLastEpisode(path, dub);
-        preloadSources(path, {episodeStart: episode, episodeEnd: maxEpisodes < (episode + 4) ? maxEpisodes : episode + 4 }, dub);
         res.send({
             statusCode: res.statusCode,
             status: res.statusCode == 200 ? "OK" : "Error",
             request: {
                 path, 
-                episodeStart: episode,
-                episodeEnd: maxEpisodes < (episode + 4) ? maxEpisodes : episode + 4 ,
+                episode: episode,
                 dub
             },
             body: results
@@ -110,5 +107,21 @@ app.get("/stream", async (req, res) => {
         res.status(500).send("An error occurred :(");
     } finally {
         console.timeEnd();
+    }
+})
+
+app.get("hanime/search", async (req, res) => {
+    console.time("Search time:");
+    try {
+        const results = await searchHanime(req.query.keyword);
+        res.send({
+            statusCode: res.statusCode,
+            body: results
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred :(");
+    } finally {
+        console.timeEnd("Search time:");
     }
 })

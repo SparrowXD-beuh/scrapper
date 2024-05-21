@@ -11,18 +11,37 @@ async function connectToDatabase() {
     }
 };
 
-async function find(videoid, collection) {
-    const exists = await database.db("anime").collection(collection).findOne({ _id: videoid });
-    if (exists) return exists;
-    else return false
+async function find(filename, folderId) {
+  fetch(`https://api.gofile.io/contents/${process.env.ACCOUNT_ID}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${process.env.TOKEN}`
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+  })
+  .catch(error => console.error(error));
 };
 
-async function insert(doc, collection) {
-    const ttl = 4 * 60 * 60
-    await database.db("anime").collection(collection).createIndex({ "expiresAt": 1 }, { expireAfterSeconds: ttl });
-    doc.expiresAt = new Date();
-    doc.expiresAt.setSeconds(doc.expiresAt.getSeconds() + ttl);
-    await database.db("anime").collection(collection).insertOne(doc);
+async function insert(file, folderId) {
+  const formData = new FormData();
+  formData.append("file", 'https://gredirect.info/download.php?url=aHR0cHM6LyAdeqwrwedffryretgsdFrsftrsvfsfsr9hb3NuNTURASDGHUSRFSJGYfdsffsderFStewthsfSFtrftesdflvN2t5LmFuZjU5OC5jb20vdXNlcjEzNDIvZTVkZWMzNDc3NmFmNzAwMzQ4Y2EzYzZjZmMzNjU2NWIvRVAuMS52MS4xMDgwcC5tcDQ/dG9rZW49WmFvOUhpOG0zbWlqa3JVWWlDUG8xQSZleHBpcmVzPTE3MTU3MDUyMzEmaWQ9MTcyNDQ2');
+  formData.append("folderId", "2d563cf5-8210-445e-a198-2507742b237e");
+  
+  fetch('https://store1.gofile.io/contents/uploadfile', {
+      method: 'POST',
+      headers: {
+          'Authorization': `Bearer ${process.env.TOKEN}`
+      },
+      body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+  })
+  .catch(error => console.error(error));
 }
 
 module.exports = { connectToDatabase, find, insert }

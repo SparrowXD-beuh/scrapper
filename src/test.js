@@ -1,7 +1,8 @@
 // function printStringDifferences(str1, str2) {
 //     let differences = [];
 
-const { searchAnime, preloadSources, getLastEpisode } = require("./scrapper");
+const { insert } = require("./database");
+const { searchAnime, preloadSources, getLastEpisode, searchHanime, getHanimeInfo } = require("./scrapper");
 const { getBulkVideoIds } = require("./scrapper")
 
     
@@ -31,7 +32,8 @@ const { getBulkVideoIds } = require("./scrapper")
 
 async function main() {
     console.time();
-    await getLastEpisode('/category/one-piece', true);
+    const res = await searchHanime("persona");
+    console.log(res);
     console.timeEnd();
 }
 
