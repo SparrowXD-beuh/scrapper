@@ -3,6 +3,17 @@ const cheerio = require("cheerio");
 const getBrowser = require("./browser");
 const { find, insert } = require("./database");
 
+const config = {
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+  }
+};
+
 const timeout = 60000;
 async function takeScreenshot(url) {
   const browser = await getBrowser();
@@ -106,7 +117,7 @@ async function getLastEpisode(url, dub) {
 
 async function searchHanime(keyword) {
   try {
-    const html = await axios.get(`https://hanimehentai.tv/?s=${keyword?.replace(/^\/category\//, '')}`);
+    const html = await axios.get(`https://hanimehentai.tv/?s=${keyword?.replace(/^\/category\//, '')}`, config);
     const $ = cheerio.load(html.data);
     const list = await Promise.all($('div.item').map(async (i, element) => {
       return await getHanimeInfo($(element).find('a').attr('href').replace('https://hanimehentai.tv/', ''));
@@ -120,7 +131,7 @@ async function searchHanime(keyword) {
 
 async function getHanimeInfo(path) {
   try {
-    const html = await axios.get(`https://hanimehentai.tv/${path}`);
+    const html = await axios.get(`https://hanimehentai.tv/${path}`, config);
     const $ = cheerio.load(html.data);
     return {
       title: $('h1.htitle').text().trim(),
