@@ -110,7 +110,7 @@ app.get("/stream", async (req, res) => {
     }
 })
 
-app.get("hanime/search", async (req, res) => {
+app.get("/hanime/search", async (req, res) => {
     console.time("Search time:");
     try {
         const results = await searchHanime(req.query.keyword);
